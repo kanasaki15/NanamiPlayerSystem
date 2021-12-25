@@ -1,0 +1,8 @@
+MySQLServer: 'mysql.server'
+MySQLPort: 3306
+MySQLDatabase: ''
+MySQLOption: '?allowPublicKeyRetrieval=true&useSSL=false'
+MySQLUsername: ''
+MySQLPassword: ''
+
+ServerName: 'lobby'
