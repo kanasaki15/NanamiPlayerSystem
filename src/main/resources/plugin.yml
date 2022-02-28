@@ -4,12 +4,12 @@ main: xyz.n7mn.dev.nanamiplayersystem.NanamiPlayerSystem
 authors: [ 7mi_chan ]
 description: NanamiPlayerSystem
 commands:
-  setjoin:
-    description: ''
-    usage: '/setjoin <perm>'
   perm:
     description: ''
     usage: '/perm'
   join:
     description: ''
     usage: '/join'
+  config:
+    description: ''
+    usage: '/config'

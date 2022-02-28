@@ -1,8 +1,23 @@
-MySQLServer: 'mysql.server'
+# 有効設定
+JoinCheck: true # 入室権限チェック
+AutoOP: true # 自動op付与
+SendOPMessage: true # 入退室メッセージ切り替え
+
+# prefix
+Prefix: '&e[ななみ鯖]'
+
+# 入室権限設定
+ServerJoinPermList: 'Admin'
+ServerJoinPlayerList: 'Itika_Nakano'
+
+# 付与設定
+ServerOPPermList: 'Admin,Moderator'
+ServerOPPlayerList: 'Itika_Nakano,N1no_Nakano,449be6b4-4c41-464e-afeb-b9934f00ddb7'
+
+# MySQL
+MySQLServer: ''
 MySQLPort: 3306
 MySQLDatabase: ''
-MySQLOption: '?allowPublicKeyRetrieval=true&useSSL=false'
 MySQLUsername: ''
 MySQLPassword: ''
-
-ServerName: 'lobby'
+MySQLOption: '?allowPublicKeyRetrieval=true&useSSL=false'

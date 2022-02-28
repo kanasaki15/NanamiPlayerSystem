@@ -1,5 +1,6 @@
 package xyz.n7mn.dev.nanamiplayersystem;
 
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -7,140 +8,131 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.Plugin;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Locale;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class EventListener implements Listener {
     private final NanamiPlayerSystem plugin;
-    private final Connection con;
-    public EventListener(NanamiPlayerSystem plugin, Connection con) {
+    private Map<UUID, String> kickData = new HashMap<>();
+    private String[] SetPermList;
+    private String[] SetPermPlayerList;
+
+    public EventListener(NanamiPlayerSystem plugin) {
         this.plugin = plugin;
-        this.con = con;
+        this.SetPermList = plugin.getConfig().getString("ServerOPPermList").split(",");
+        this.SetPermPlayerList = plugin.getConfig().getString("ServerOPPlayerList").split(",");
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void AsyncPlayerPreLoginEvent(AsyncPlayerPreLoginEvent e){
-        String p = "User";
+
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void PlayerJoinEvent (PlayerJoinEvent e){
+
+        String permDisplayName = "";
+        String permName = "";
+
+        e.getPlayer().setOp(false);
+
         try {
-            PreparedStatement statement = con.prepareStatement("SELECT * FROM `UserList`, `RoleList` WHERE UserList.RoleUUID = RoleList.UUID AND MinecraftUserID = ? AND UserList.Active = 1");
-            statement.setString(1, e.getUniqueId().toString());
+            Connection con = DriverManager.getConnection("jdbc:mysql://" + plugin.getConfig().getString("MySQLServer") + ":" + plugin.getConfig().getInt("MySQLPort") + "/" + plugin.getConfig().getString("MySQLDatabase") + plugin.getConfig().getString("MySQLOption") , plugin.getConfig().getString("MySQLUsername"), plugin.getConfig().getString("MySQLPassword"));
+            con.setAutoCommit(true);
+
+            PreparedStatement statement = con.prepareStatement("SELECT UserList.*, RoleList.RoleName, RoleList.RoleDisplayName  FROM UserList, RoleList WHERE UserList.Active = 1 AND UserList.RoleUUID = RoleList.UUID AND UserList.MinecraftUserID = ?");
+            statement.setString(1, e.getPlayer().getUniqueId().toString());
+
             ResultSet set = statement.executeQuery();
             if (set.next()){
-                p = set.getString("RoleName");
-                set.close();
+                permDisplayName = set.getString("RoleList.RoleDisplayName");
+                permName = set.getString("RoleList.RoleName");
             }
+            set.close();
             statement.close();
-        } catch (SQLException ex) {
+
+            con.close();
+        } catch (SQLException ex){
             ex.printStackTrace();
         }
 
+        if (plugin.getConfig().getBoolean("AutoOP")){
+            boolean isSetOp = false;
 
-        if (plugin.getServerData().getServerJoinPerm().length == 1 && plugin.getServerData().getServerJoinPerm()[0].toLowerCase().equals("all")){
-            e.allow();
-            return;
-        }
-
-        boolean isOK = false;
-        StringBuilder sb = new StringBuilder();
-
-        for (String perm : plugin.getServerData().getServerJoinPerm()){
-            if (perm.equals(p)){
-                isOK = true;
+            for (String p : SetPermList){
+                if (permName.toLowerCase().equals(p.toLowerCase())){
+                    e.getPlayer().setOp(true);
+                    isSetOp = true;
+                    break;
+                }
             }
-            sb.append(perm);
-            sb.append(",");
-        }
 
-        if (isOK){
-            e.allow();
-        } else {
-            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, "" +
-                    "--- ななみ鯖 ---\n" +
-                    "あなたは今サーバーに入る権限がありません！\n" +
-                    "必要な権限 : "+sb.substring(0, sb.length()-1)+"\n" +
-                    "あなたの権限 : "+p
-            );
+            if (!isSetOp){
+                for (String player : SetPermPlayerList) {
+                    if (e.getPlayer().getName().equals(player)){
+                        e.getPlayer().setOp(true);
+                        break;
+                    }
 
-            String finalP = p;
-            new Thread(()->{
-                for (Player player : plugin.getServer().getOnlinePlayers()){
-                    if (player.isOp()){
-                        player.sendMessage("" +
-                                ChatColor.YELLOW+"[ななみ鯖] "+e.getName()+"さん (権限: "+ finalP +")が参加しようとしました。"
-                        );
+                    try {
+                        if (e.getPlayer().getUniqueId().equals(UUID.fromString(player))){
+                            e.getPlayer().setOp(true);
+                            break;
+                        }
+                    } catch (Exception ex){
+                        // するー
                     }
                 }
+            }
+        }
+
+        String opMessage = ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("Prefix")) + ChatColor.RESET+" " + e.getPlayer().getName() + "さんが入室しました。 (権限: " + permDisplayName + ")";
+        plugin.getLogger().info(opMessage);
+        if (plugin.getConfig().getBoolean("SendOPMessage")){
+            new Thread(()->{
+                for (Player player : plugin.getServer().getOnlinePlayers()) {
+                    if (player.isOp()){
+                        player.sendMessage(opMessage);
+                    }
+                }
+
             }).start();
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void PlayerJoinEvent (PlayerJoinEvent e){
-        String p = "User";
-        try {
-            PreparedStatement statement = con.prepareStatement("SELECT * FROM `UserList`, `RoleList` WHERE UserList.RoleUUID = RoleList.UUID AND MinecraftUserID = ? AND UserList.Active = 1");
-            statement.setString(1, e.getPlayer().getUniqueId().toString());
-            ResultSet set = statement.executeQuery();
-            if (set.next()){
-                p = set.getString("RoleName");
-                set.close();
-            }
-            statement.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-
-
-        boolean isOK = false;
-        if (plugin.getServerData().getServerOpPerm().length == 1 && plugin.getServerData().getServerOpPerm()[0].toLowerCase().equals("all")) {
-            isOK  = true;
-        }
-
-
-        for (String perm : plugin.getServerData().getServerJoinPerm()){
-            if (perm.equals(p)){
-                isOK = true;
-                break;
-            }
-        }
-
-        e.getPlayer().setOp(isOK);
-
-        boolean skip = false;
-        for (Plugin plugin : plugin.getServer().getPluginManager().getPlugins()){
-            if (plugin.getName().matches(".*Survival.*")){
-                skip = true;
-                break;
-            }
-        }
-
-        if (skip){
-            return;
-        }
-
-        for (Player player : plugin.getServer().getOnlinePlayers()){
-            if (player.isOp()){
-
-                player.sendMessage(ChatColor.YELLOW+"[ななみ鯖] "+e.getPlayer().getName()+"さんが参加しました。");
-            }
-        }
+    public void d (PlayerKickEvent e){
+        kickData.put(e.getPlayer().getUniqueId(), e.getReason());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void PlayerQuitEvent (PlayerQuitEvent e){
-        e.getPlayer().setOp(false);
+        if (e.getPlayer().isOp()){
+            e.getPlayer().setOp(false);
+        }
 
-        for (Player player : plugin.getServer().getOnlinePlayers()){
-            if (player.isOp()){
+        String reason = kickData.get(e.getPlayer().getUniqueId());
 
-                player.sendMessage(ChatColor.YELLOW+"[ななみ鯖] "+e.getPlayer().getName()+"さんが退出しました。");
-            }
+        String permName = "";
+        if (plugin.getConfig().getBoolean("SendOPMessage")){
+            new Thread(()->{
+                for (Player player : plugin.getServer().getOnlinePlayers()) {
+                    if (player.isOp()){
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("Prefix")) +"&f "+e.getPlayer().getName()+"さんが退出しました。 (権限: "+permName+")");
+                        if (reason != null && reason.length() > 0){
+                            player.sendMessage("--- kick理由 ---\n"+reason+"\n---------");
+
+                            kickData.remove(e.getPlayer().getUniqueId());
+                        }
+                    }
+                }
+
+            }).start();
         }
     }
 }
