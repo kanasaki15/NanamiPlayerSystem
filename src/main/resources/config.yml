@@ -8,11 +8,11 @@ Prefix: '&e[ななみ鯖]'
 
 # 入室権限設定
 ServerJoinPermList: 'Admin'
-ServerJoinPlayerList: 'Itika_Nakano'
+ServerJoinPlayerList: '7mi_chan'
 
 # 付与設定
 ServerOPPermList: 'Admin,Moderator'
-ServerOPPlayerList: 'Itika_Nakano,N1no_Nakano,449be6b4-4c41-464e-afeb-b9934f00ddb7'
+ServerOPPlayerList: 'Yotuba_Nakano,c6f2f6d3-5a7d-45cd-a16a-52e4d4e2ceb2'
 
 # MySQL
 MySQLServer: ''
