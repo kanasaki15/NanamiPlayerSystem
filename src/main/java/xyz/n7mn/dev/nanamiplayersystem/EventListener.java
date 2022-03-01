@@ -193,7 +193,7 @@ public class EventListener implements Listener {
             new Thread(()->{
                 for (Player player : plugin.getServer().getOnlinePlayers()) {
                     if (player.isOp()){
-                        player.sendMessage(ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("Prefix")) +"&f "+e.getPlayer().getName()+"さんが退出しました。 (権限: "+permName+")");
+                        player.sendMessage(ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("Prefix")) +ChatColor.RESET+" "+e.getPlayer().getName()+"さんが退出しました。 ");
                         if (reason != null && reason.length() > 0){
                             player.sendMessage("--- kick理由 ---\n"+reason+"\n---------");
 
