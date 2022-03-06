@@ -10,6 +10,3 @@ commands:
   join:
     description: ''
     usage: '/join'
-  config:
-    description: ''
-    usage: '/config'

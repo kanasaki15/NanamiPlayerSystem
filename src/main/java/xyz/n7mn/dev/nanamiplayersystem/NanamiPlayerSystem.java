@@ -1,6 +1,7 @@
 package xyz.n7mn.dev.nanamiplayersystem;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.n7mn.dev.nanamiplayersystem.command.Join;
 
 import java.sql.Driver;
 import java.sql.DriverManager;
@@ -37,6 +38,11 @@ public final class NanamiPlayerSystem extends JavaPlugin {
 
 
         getServer().getPluginManager().registerEvents(new EventListener(this), this);
+
+        getCommand("join").setExecutor(new Join(this));
+        getCommand("join").setTabCompleter(new Join(this));
+
+
     }
 
     @Override
