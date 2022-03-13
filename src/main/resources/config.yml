@@ -15,6 +15,7 @@ ServerOPPermList: 'Admin,Moderator'
 ServerOPPlayerList: 'Yotuba_Nakano,c6f2f6d3-5a7d-45cd-a16a-52e4d4e2ceb2'
 
 # 自動入室権限設定
+ServerAutoOpen: true
 ServerOpenTime1: ["13:30","20:50","20:50","20:50","20:50","20:50","13:30"] # 日,月,火,水,木,金,土
 ServerOpenTime2: ["21:00","","","","","","21:00"] # 日,月,火,水,木,金,土
 

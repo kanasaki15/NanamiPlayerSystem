@@ -99,7 +99,7 @@ public final class NanamiPlayerSystem extends JavaPlugin {
 
                 }
 
-                System.out.println(new SimpleDateFormat("HH:mm").format(nowDate) + " / " + s + " / " + s2);
+                //System.out.println(new SimpleDateFormat("HH:mm").format(nowDate) + " / " + s + " / " + s2);
 
                 if (nowDate.getTime() >= instance.getTime().getTime()){
                     //System.out.println("p1-1");
@@ -127,8 +127,9 @@ public final class NanamiPlayerSystem extends JavaPlugin {
             }
         };
 
-        bukkitRunnable.runTaskTimerAsynchronously(this, 0L, 20L);
-
+        if (getConfig().getBoolean("ServerAutoOpen")){
+            bukkitRunnable.runTaskTimerAsynchronously(this, 0L, 20L);
+        }
     }
 
     @Override
