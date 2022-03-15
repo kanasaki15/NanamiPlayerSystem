@@ -52,78 +52,84 @@ public final class NanamiPlayerSystem extends JavaPlugin {
             @Override
             public void run() {
 
-                Date nowDate = new Date();
+                Date NowDate = new Date();
                 Calendar NowDateCalendar = Calendar.getInstance();
-                NowDateCalendar.setTime(nowDate);
-
-                Calendar instance = Calendar.getInstance();
-                Calendar instance2 = Calendar.getInstance();
-                instance.setTime(nowDate);
-                instance2.setTime(nowDate);
+                NowDateCalendar.setTime(NowDate);
+                NowDateCalendar.set(Calendar.SECOND, 0);
 
                 List<String> list1 = getConfig().getStringList("ServerOpenTime1");
                 List<String> list2 = getConfig().getStringList("ServerOpenTime2");
-                String s = list1.get(instance.get(Calendar.DAY_OF_WEEK) - 1);
-                String s2 = list2.get(instance.get(Calendar.DAY_OF_WEEK) - 1);
+                String OpenTime1 = list1.get(NowDateCalendar.get(Calendar.DAY_OF_WEEK) - 1);
+                String OpenTime2 = list2.get(NowDateCalendar.get(Calendar.DAY_OF_WEEK) - 1);
 
-                instance.set(Calendar.HOUR, Integer.parseInt(s.split(":")[0]));
-                instance.set(Calendar.MINUTE, Integer.parseInt(s.split(":")[1]));
-                instance.set(Calendar.SECOND, 0);
-
-                if (s2.length() > 0){
-                    instance2.set(Calendar.HOUR, Integer.parseInt(s2.split(":")[0]));
-                    instance2.set(Calendar.MINUTE, Integer.parseInt(s2.split(":")[1]));
-                    instance2.set(Calendar.SECOND, 0);
-                } else {
-                    s2 = "23:59";
-                    instance2.set(Calendar.HOUR, Integer.parseInt(s2.split(":")[0]));
-                    instance2.set(Calendar.MINUTE, Integer.parseInt(s2.split(":")[1]));
-                    instance2.set(Calendar.SECOND, 0);
+                if (OpenTime1.length() == 0){
+                    OpenTime1 = "00:00";
+                }
+                if (OpenTime2.length() == 0){
+                    OpenTime2 = "23:59";
                 }
 
-                if (NowDateCalendar.get(Calendar.HOUR) > instance2.get(Calendar.HOUR) || (NowDateCalendar.get(Calendar.HOUR) >= instance2.get(Calendar.HOUR) && NowDateCalendar.get(Calendar.MINUTE) > instance2.get(Calendar.MINUTE))){
-                    s = list1.get(instance.get(Calendar.DAY_OF_WEEK));
-                    s2 = list2.get(instance.get(Calendar.DAY_OF_WEEK));
+                Calendar OpenTimeInstance1 = Calendar.getInstance();
+                Calendar OpenTimeInstance2 = Calendar.getInstance();
 
-                    instance.set(Calendar.DAY_OF_MONTH, NowDateCalendar.get(Calendar.DAY_OF_MONTH) + 1);
-                    instance.set(Calendar.HOUR, Integer.parseInt(s.split(":")[0]));
-                    instance.set(Calendar.MINUTE, Integer.parseInt(s.split(":")[1]));
+                OpenTimeInstance1.setTime(NowDate);
+                OpenTimeInstance1.set(Calendar.HOUR_OF_DAY, Integer.parseInt(OpenTime1.split(":")[0]));
+                OpenTimeInstance1.set(Calendar.MINUTE, Integer.parseInt(OpenTime1.split(":")[1]));
+                OpenTimeInstance1.set(Calendar.SECOND, 0);
+                OpenTimeInstance2.setTime(NowDate);
+                OpenTimeInstance2.set(Calendar.HOUR_OF_DAY, Integer.parseInt(OpenTime2.split(":")[0]));
+                OpenTimeInstance2.set(Calendar.MINUTE, Integer.parseInt(OpenTime2.split(":")[1]));
+                OpenTimeInstance2.set(Calendar.SECOND, 0);
 
-                    if (s2.length() == 0){
-                        s2 = "23:59";
+                if (OpenTimeInstance2.getTime().getTime() > NowDate.getTime()){
+                    OpenTimeInstance1.set(Calendar.DAY_OF_MONTH, NowDateCalendar.get(Calendar.DAY_OF_MONTH) + 1);
+                    OpenTime1 = list1.get(NowDateCalendar.get(Calendar.DAY_OF_WEEK));
+                    OpenTime2 = list2.get(NowDateCalendar.get(Calendar.DAY_OF_WEEK));
+                    if (OpenTime1.length() == 0){
+                        OpenTime1 = "00:00";
+                    }
+                    if (OpenTime2.length() == 0){
+                        OpenTime2 = "23:59";
                     }
 
-                    instance2.set(Calendar.DAY_OF_MONTH, NowDateCalendar.get(Calendar.DAY_OF_MONTH) + 1);
-                    instance2.set(Calendar.HOUR, Integer.parseInt(s2.split(":")[0]));
-                    instance2.set(Calendar.MINUTE, Integer.parseInt(s2.split(":")[1]));
-
+                    OpenTimeInstance1.set(Calendar.HOUR_OF_DAY, Integer.parseInt(OpenTime1.split(":")[0]));
+                    OpenTimeInstance1.set(Calendar.MINUTE, Integer.parseInt(OpenTime1.split(":")[1]));
+                    OpenTimeInstance1.set(Calendar.SECOND, 0);
+                    OpenTimeInstance2.setTime(NowDate);
+                    OpenTimeInstance2.set(Calendar.HOUR_OF_DAY, Integer.parseInt(OpenTime2.split(":")[0]));
+                    OpenTimeInstance2.set(Calendar.MINUTE, Integer.parseInt(OpenTime2.split(":")[1]));
+                    OpenTimeInstance2.set(Calendar.SECOND, 0);
                 }
 
-                //System.out.println(new SimpleDateFormat("HH:mm").format(nowDate) + " / " + s + " / " + s2);
+                SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+                //System.out.println(format.format(NowDateCalendar.getTime()) + " / " + format.format(OpenTimeInstance1.getTime())+ " / " + format.format(OpenTimeInstance2.getTime()));
 
-                if (nowDate.getTime() >= instance.getTime().getTime()){
-                    //System.out.println("p1-1");
-                    if (NowDateCalendar.get(Calendar.HOUR) == instance.get(Calendar.HOUR) && NowDateCalendar.get(Calendar.MINUTE) == instance.get(Calendar.MINUTE)){
-                        //System.out.println("p1-2");
+                Date date1 = OpenTimeInstance1.getTime();
+                Date date2 = OpenTimeInstance2.getTime();
+                if (date1.getTime() >= NowDate.getTime()){
+                    //System.out.println("パターン1");
+
+                    if (date1.getTime() == NowDate.getTime()){
                         getConfig().set("JoinCheck", false);
+                        getLogger().info(ChatColor.translateAlternateColorCodes('&', getConfig().getString("Prefix")) + ChatColor.RESET + " 指定時間("+format.format(date1)+")になったため自動開放をしました。");
 
-                        String opMessage = ChatColor.translateAlternateColorCodes('&',getConfig().getString("Prefix")) + ChatColor.RESET+" 指定時間("+s+")になったため 入室権限チェックを自動解除しました。";
-                        getServer().getLogger().info(opMessage);
                         this.cancel();
                     }
-                } else {
-                    if (nowDate.getTime() <= instance2.getTime().getTime()){
-                        //System.out.println("p2-1");
-                        if (NowDateCalendar.get(Calendar.HOUR) == instance2.get(Calendar.HOUR) && NowDateCalendar.get(Calendar.MINUTE) == instance2.get(Calendar.MINUTE)){
-                            //System.out.println("p2-2");
-                            getConfig().set("JoinCheck", false);
 
-                            String opMessage = ChatColor.translateAlternateColorCodes('&',getConfig().getString("Prefix")) + ChatColor.RESET+" 指定時間 ("+s2+")になったため 入室権限チェックを自動解除しました。";
-                            getServer().getLogger().info(opMessage);
-                            this.cancel();
-                        }
+                    return;
+                }
+
+                if (date2.getTime() >= NowDate.getTime()){
+                    //System.out.println("パターン2");
+
+                    if (date2.getTime() == NowDate.getTime()){
+                        getConfig().set("JoinCheck", false);
+                        getLogger().info(ChatColor.translateAlternateColorCodes('&', getConfig().getString("Prefix")) + ChatColor.RESET + " 指定時間("+format.format(date2)+")になったため自動開放をしました。");
+
+                        this.cancel();
                     }
                 }
+
             }
         };
 
