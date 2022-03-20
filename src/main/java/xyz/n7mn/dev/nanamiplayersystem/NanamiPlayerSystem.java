@@ -111,6 +111,7 @@ public final class NanamiPlayerSystem extends JavaPlugin {
                     getConfig().set("JoinCheck", false);
                     getLogger().info(ChatColor.translateAlternateColorCodes('&', getConfig().getString("Prefix")) + ChatColor.RESET + " 指定時間("+format.format(date1)+")になったため自動開放をしました。");
                     this.cancel();
+                    return;
                 }
 
                 if (NowDateCalendar.get(Calendar.HOUR_OF_DAY) == OpenTimeInstance2.get(Calendar.HOUR_OF_DAY) && NowDateCalendar.get(Calendar.MINUTE) == OpenTimeInstance2.get(Calendar.MINUTE)){
