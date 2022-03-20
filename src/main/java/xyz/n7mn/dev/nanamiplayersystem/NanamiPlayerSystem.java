@@ -106,28 +106,17 @@ public final class NanamiPlayerSystem extends JavaPlugin {
 
                 Date date1 = OpenTimeInstance1.getTime();
                 Date date2 = OpenTimeInstance2.getTime();
-                if (date1.getTime() >= NowDate.getTime()){
-                    //System.out.println("パターン1");
 
-                    if (date1.getTime() == NowDate.getTime()){
-                        getConfig().set("JoinCheck", false);
-                        getLogger().info(ChatColor.translateAlternateColorCodes('&', getConfig().getString("Prefix")) + ChatColor.RESET + " 指定時間("+format.format(date1)+")になったため自動開放をしました。");
-
-                        this.cancel();
-                    }
-
-                    return;
+                if (NowDateCalendar.get(Calendar.HOUR_OF_DAY) == OpenTimeInstance1.get(Calendar.HOUR_OF_DAY) && NowDateCalendar.get(Calendar.MINUTE) == OpenTimeInstance1.get(Calendar.MINUTE)){
+                    getConfig().set("JoinCheck", false);
+                    getLogger().info(ChatColor.translateAlternateColorCodes('&', getConfig().getString("Prefix")) + ChatColor.RESET + " 指定時間("+format.format(date1)+")になったため自動開放をしました。");
+                    this.cancel();
                 }
 
-                if (date2.getTime() >= NowDate.getTime()){
-                    //System.out.println("パターン2");
-
-                    if (date2.getTime() == NowDate.getTime()){
-                        getConfig().set("JoinCheck", false);
-                        getLogger().info(ChatColor.translateAlternateColorCodes('&', getConfig().getString("Prefix")) + ChatColor.RESET + " 指定時間("+format.format(date2)+")になったため自動開放をしました。");
-
-                        this.cancel();
-                    }
+                if (NowDateCalendar.get(Calendar.HOUR_OF_DAY) == OpenTimeInstance2.get(Calendar.HOUR_OF_DAY) && NowDateCalendar.get(Calendar.MINUTE) == OpenTimeInstance2.get(Calendar.MINUTE)){
+                    getConfig().set("JoinCheck", false);
+                    getLogger().info(ChatColor.translateAlternateColorCodes('&', getConfig().getString("Prefix")) + ChatColor.RESET + " 指定時間("+format.format(date2)+")になったため自動開放をしました。");
+                    this.cancel();
                 }
 
             }
