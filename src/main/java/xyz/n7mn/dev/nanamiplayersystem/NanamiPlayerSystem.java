@@ -59,8 +59,11 @@ public final class NanamiPlayerSystem extends JavaPlugin {
 
                 List<String> list1 = getConfig().getStringList("ServerOpenTime1");
                 List<String> list2 = getConfig().getStringList("ServerOpenTime2");
-                String OpenTime1 = list1.get(NowDateCalendar.get(Calendar.DAY_OF_WEEK) - 1);
-                String OpenTime2 = list2.get(NowDateCalendar.get(Calendar.DAY_OF_WEEK) - 1);
+
+                int i = NowDateCalendar.get(Calendar.DAY_OF_WEEK) - 1;
+                //System.out.println(i);
+                String OpenTime1 = list1.get(i);
+                String OpenTime2 = list2.get(i);
 
                 if (OpenTime1.length() == 0){
                     OpenTime1 = "00:00";
@@ -83,8 +86,13 @@ public final class NanamiPlayerSystem extends JavaPlugin {
 
                 if (OpenTimeInstance2.getTime().getTime() > NowDate.getTime()){
                     OpenTimeInstance1.set(Calendar.DAY_OF_MONTH, NowDateCalendar.get(Calendar.DAY_OF_MONTH) + 1);
-                    OpenTime1 = list1.get(NowDateCalendar.get(Calendar.DAY_OF_WEEK));
-                    OpenTime2 = list2.get(NowDateCalendar.get(Calendar.DAY_OF_WEEK));
+                    if (i <= 5){
+                        OpenTime1 = list1.get(NowDateCalendar.get(Calendar.DAY_OF_WEEK));
+                        OpenTime2 = list2.get(NowDateCalendar.get(Calendar.DAY_OF_WEEK));
+                    } else {
+                        OpenTime1 = list1.get(0);
+                        OpenTime2 = list2.get(0);
+                    }
                     if (OpenTime1.length() == 0){
                         OpenTime1 = "00:00";
                     }
