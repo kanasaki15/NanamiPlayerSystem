@@ -3,7 +3,6 @@ package xyz.n7mn.dev.nanamiplayersystem;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import okhttp3.OkHttpClient;
@@ -18,7 +17,6 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import xyz.n7mn.dev.nanamiplayersystem.data.ProtocolVersion;
 
 import java.io.IOException;
 import java.sql.*;
@@ -36,7 +34,7 @@ public class EventListener implements Listener {
     private String[] SetPermList;
     private String[] SetPermPlayerList;
 
-    private Map<Integer, ProtocolVersion> protocolVersionList = new HashMap<>();
+    private Map<Integer, String> protocolVersionList = new HashMap<>();
 
     public EventListener(NanamiPlayerSystem plugin) {
         this.plugin = plugin;
@@ -71,9 +69,9 @@ public class EventListener implements Listener {
                 JsonElement element = list.get(s);
                 JsonObject object = element.getAsJsonObject();
                 if (object.get("protocol_id") == null){
-                    protocolVersionList.put(i, new ProtocolVersion(i, object.get("name").getAsString()));
+                    protocolVersionList.put(i, object.get("name").getAsString());
                 } else {
-                    protocolVersionList.put(object.get("protocol_id").getAsInt(), new ProtocolVersion(object.get("protocol_id").getAsInt(), object.get("name").getAsString()));
+                    protocolVersionList.put(object.get("protocol_id").getAsInt(), object.get("name").getAsString());
                 }
                 i++;
             }
@@ -212,7 +210,7 @@ public class EventListener implements Listener {
         ProtocolManager manager = ProtocolLibrary.getProtocolManager();
         int protocolVersion = manager.getProtocolVersion(e.getPlayer());
 
-        String opMessage = ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("Prefix")) + ChatColor.RESET+" " + e.getPlayer().getName() + "さんが入室しました。 (Ver: "+protocolVersionList.get(protocolVersion).getMinecraftVersion()+" 権限: " + permDisplayName + ")";
+        String opMessage = ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("Prefix")) + ChatColor.RESET+" " + e.getPlayer().getName() + "さんが入室しました。 (Ver: "+protocolVersionList.get(protocolVersion)+" 権限: " + permDisplayName + ")";
         plugin.getLogger().info(opMessage);
         if (plugin.getConfig().getBoolean("SendOPMessage")){
             new Thread(()->{
