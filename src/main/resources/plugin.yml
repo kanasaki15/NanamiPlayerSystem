@@ -3,6 +3,7 @@ version: '${version}'
 main: xyz.n7mn.dev.nanamiplayersystem.NanamiPlayerSystem
 authors: [ 7mi_chan ]
 description: NanamiPlayerSystem
+depend: [ViaVersion]
 commands:
   perm:
     description: ''

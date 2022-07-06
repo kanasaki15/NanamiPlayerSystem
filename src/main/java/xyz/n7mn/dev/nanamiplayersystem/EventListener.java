@@ -1,10 +1,10 @@
 package xyz.n7mn.dev.nanamiplayersystem;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.viaversion.viaversion.api.Via;
+import com.viaversion.viaversion.api.ViaAPI;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -206,9 +206,8 @@ public class EventListener implements Listener {
             }
         }
 
-
-        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-        int protocolVersion = manager.getProtocolVersion(e.getPlayer());
+        ViaAPI api = Via.getAPI();
+        int protocolVersion = api.getPlayerVersion(e.getPlayer().getUniqueId());
 
         String opMessage = ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("Prefix")) + ChatColor.RESET+" " + e.getPlayer().getName() + "さんが入室しました。 (Ver: "+protocolVersionList.get(protocolVersion)+" 権限: " + permDisplayName + ")";
         plugin.getLogger().info(opMessage);

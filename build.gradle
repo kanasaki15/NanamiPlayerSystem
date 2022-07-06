@@ -13,8 +13,9 @@ repositories {
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
 
-    repositories {
-        maven { url "https://repo.dmulloy2.net/repository/public/" }
+    maven {
+        name = 'viaversion-repo'
+        url = 'https://repo.viaversion.com'
     }
 }
 
@@ -23,7 +24,7 @@ dependencies {
 
     implementation 'mysql:mysql-connector-java:8.0.29'
     implementation 'com.google.code.gson:gson:2.9.0'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT'
+    compileOnly 'com.viaversion:viaversion-api:4.3.1'
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 }
 
