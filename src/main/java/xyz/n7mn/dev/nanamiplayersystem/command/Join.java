@@ -28,8 +28,8 @@ public class Join implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        if (args.length != 2){
-            sender.sendMessage(prefix + "/join (add|remove) (PlayerName|PermName)");
+        if (args.length != 1 && args.length != 2){
+            sender.sendMessage(prefix + "/join (add|remove) (PlayerName|PermName) or /join (true|false)");
             return true;
         }
 

@@ -1,6 +1,14 @@
 package xyz.n7mn.dev.nanamiplayersystem;
 
-
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,8 +18,9 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import xyz.n7mn.dev.nanamiplayersystem.data.ProtocolVersion;
 
-import java.nio.charset.StandardCharsets;
+import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +36,7 @@ public class EventListener implements Listener {
     private String[] SetPermList;
     private String[] SetPermPlayerList;
 
+    private Map<Integer, ProtocolVersion> protocolVersionList = new HashMap<>();
 
     public EventListener(NanamiPlayerSystem plugin) {
         this.plugin = plugin;
@@ -34,6 +44,43 @@ public class EventListener implements Listener {
         this.SetPermPlayerList = plugin.getConfig().getString("ServerOPPlayerList").split(",");
         this.JoinPermList = plugin.getConfig().getString("ServerJoinPermList").split(",");
         this.JoinPermPlayerList = plugin.getConfig().getString("ServerJoinPlayerList").split(",");
+
+        try {
+            OkHttpClient client = new OkHttpClient();
+
+            Request request = new Request.Builder()
+                    .url("https://gitlab.bixilon.de/bixilon/minosoft/-/raw/master/src/main/resources/assets/minosoft/mapping/versions.json?inline=false")
+                    .build();
+            Response response = client.newCall(request).execute();
+            String json = response.body().string();
+
+            JsonObject list = new Gson().fromJson(json, JsonObject.class);
+            int i = 0;
+            while (true){
+
+                if (i > 1000){
+                    return;
+                }
+
+                String s = String.valueOf(i);
+                if (list.get(s) == null){
+                    i++;
+                    continue;
+                }
+
+                JsonElement element = list.get(s);
+                JsonObject object = element.getAsJsonObject();
+                if (object.get("protocol_id") == null){
+                    protocolVersionList.put(i, new ProtocolVersion(i, object.get("name").getAsString()));
+                } else {
+                    protocolVersionList.put(object.get("protocol_id").getAsInt(), new ProtocolVersion(object.get("protocol_id").getAsInt(), object.get("name").getAsString()));
+                }
+                i++;
+            }
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -161,7 +208,11 @@ public class EventListener implements Listener {
             }
         }
 
-        String opMessage = ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("Prefix")) + ChatColor.RESET+" " + e.getPlayer().getName() + "さんが入室しました。 (権限: " + permDisplayName + ")";
+
+        ProtocolManager manager = ProtocolLibrary.getProtocolManager();
+        int protocolVersion = manager.getProtocolVersion(e.getPlayer());
+
+        String opMessage = ChatColor.translateAlternateColorCodes('&',plugin.getConfig().getString("Prefix")) + ChatColor.RESET+" " + e.getPlayer().getName() + "さんが入室しました。 (Ver: "+protocolVersionList.get(protocolVersion).getMinecraftVersion()+" 権限: " + permDisplayName + ")";
         plugin.getLogger().info(opMessage);
         if (plugin.getConfig().getBoolean("SendOPMessage")){
             new Thread(()->{

@@ -1,10 +1,17 @@
 package xyz.n7mn.dev.nanamiplayersystem;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import xyz.n7mn.dev.nanamiplayersystem.command.Join;
+import xyz.n7mn.dev.nanamiplayersystem.data.ProtocolVersion;
 
+import java.io.IOException;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -97,7 +104,7 @@ public final class NanamiPlayerSystem extends JavaPlugin {
                         OpenTime1 = "00:00";
                     }
                     if (OpenTime2.length() == 0){
-                        OpenTime2 = "23:59";
+                        OpenTime2 = "00:00";
                     }
 
                     OpenTimeInstance1.set(Calendar.HOUR_OF_DAY, Integer.parseInt(OpenTime1.split(":")[0]));

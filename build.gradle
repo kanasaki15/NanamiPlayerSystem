@@ -12,13 +12,19 @@ repositories {
         name = 'spigotmc-repo'
         url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
     }
+
+    repositories {
+        maven { url "https://repo.dmulloy2.net/repository/public/" }
+    }
 }
 
 dependencies {
     compileOnly 'org.bukkit:bukkit:1.8-R0.1-SNAPSHOT'
 
-    implementation 'mysql:mysql-connector-java:8.0.28'
+    implementation 'mysql:mysql-connector-java:8.0.29'
     implementation 'com.google.code.gson:gson:2.9.0'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT'
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 }
 
 def targetJavaVersion = 8
