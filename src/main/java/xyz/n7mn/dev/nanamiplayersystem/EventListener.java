@@ -58,12 +58,21 @@ public class EventListener implements Listener {
             JsonElement java = editions.getAsJsonObject().get("java");
             JsonArray versions = java.getAsJsonObject().get("versions").getAsJsonArray();
 
+            boolean end = false;
             for (int i = 0; i < versions.size(); i++){
                 String version = versions.get(i).getAsJsonObject().get("name").getAsString();
 
                 int protocolNumber = 0;
                 if (!versions.get(i).getAsJsonObject().get("protocolNumber").isJsonNull()){
                     protocolNumber = versions.get(i).getAsJsonObject().get("protocolNumber").getAsInt();
+
+                    if (!end && versions.get(i).getAsJsonObject().get("protocolNumber").getAsInt() == 0){
+                        end = true;
+                    }
+
+                    if (end && protocolNumber != 0){
+                        break;
+                    }
                 };
 
 
@@ -71,6 +80,8 @@ public class EventListener implements Listener {
                     version = version + "/" + protocolVersionList.get(protocolNumber);
                 }
                 protocolVersionList.put(protocolNumber, version);
+
+
             }
 
 
